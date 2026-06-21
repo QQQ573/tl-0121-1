@@ -1,3 +1,5 @@
+export type VisibilityLevel = 'compliant' | 'marginal' | 'nonCompliant';
+
 export interface ClassroomConfig {
   rows: number;
   cols: number;
@@ -6,6 +8,8 @@ export interface ClassroomConfig {
   podiumHeight: number;
   blackboardWidth: number;
   layoutPreset: 'single' | 'double' | 'plum';
+  complianceThreshold: number;
+  fullAnalysisEnabled: boolean;
 }
 
 export interface SeatData {
@@ -14,6 +18,7 @@ export interface SeatData {
   position: [number, number, number];
   isOccluded: boolean;
   visibilityPercent: number;
+  visibilityLevel?: VisibilityLevel;
 }
 
 export interface SightlineResult {
@@ -25,6 +30,27 @@ export interface SightlineResult {
   sampleResults: { point: [number, number, number]; blocked: boolean }[];
 }
 
+export interface FullAnalysisStats {
+  totalSeats: number;
+  compliantCount: number;
+  compliantPercent: number;
+  marginalCount: number;
+  marginalPercent: number;
+  nonCompliantCount: number;
+  nonCompliantPercent: number;
+  belowThresholdCount: number;
+  belowThresholdPercent: number;
+  minVisibility: number;
+  minVisibilitySeat: { row: number; col: number } | null;
+}
+
+export interface ExportSummary {
+  config: ClassroomConfig;
+  stats: FullAnalysisStats;
+  belowThresholdSeats: { row: number; col: number; visibilityPercent: number }[];
+  timestamp: string;
+}
+
 export const DEFAULT_CONFIG: ClassroomConfig = {
   rows: 6,
   cols: 8,
@@ -33,6 +59,14 @@ export const DEFAULT_CONFIG: ClassroomConfig = {
   podiumHeight: 0.15,
   blackboardWidth: 4.0,
   layoutPreset: 'double',
+  complianceThreshold: 95,
+  fullAnalysisEnabled: false,
+};
+
+export const VISIBILITY_LEVEL_COLORS: Record<VisibilityLevel, string> = {
+  compliant: '#38A169',
+  marginal: '#F59E0B',
+  nonCompliant: '#E53E3E',
 };
 
 export const DESK_WIDTH = 0.6;

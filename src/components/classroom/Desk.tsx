@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ThreeEvent } from '@react-three/fiber';
 import * as THREE from 'three';
 import {
@@ -9,12 +9,17 @@ import {
   CHAIR_DEPTH,
   CHAIR_SEAT_HEIGHT,
   CHAIR_BACK_HEIGHT,
+  VisibilityLevel,
+  VISIBILITY_LEVEL_COLORS,
 } from '@/types/classroom';
 
 interface DeskProps {
   position: [number, number, number];
   isSelected: boolean;
   isOccluded: boolean;
+  visibilityLevel?: VisibilityLevel;
+  fullAnalysisEnabled?: boolean;
+  isBelowThreshold?: boolean;
   onClick: () => void;
 }
 
@@ -30,21 +35,36 @@ const metalMaterial = new THREE.MeshStandardMaterial({
   metalness: 0.6,
 });
 
-export function Desk({ position, isSelected, isOccluded, onClick }: DeskProps) {
+export function Desk({
+  position,
+  isSelected,
+  isOccluded,
+  visibilityLevel,
+  fullAnalysisEnabled,
+  isBelowThreshold,
+  onClick,
+}: DeskProps) {
   const [hovered, setHovered] = useState(false);
 
-  const cushionColor = isOccluded
-    ? '#E53E3E'
-    : '#38A169';
+  const cushionColor = useMemo(() => {
+    if (fullAnalysisEnabled && visibilityLevel) {
+      return VISIBILITY_LEVEL_COLORS[visibilityLevel];
+    }
+    return isOccluded ? '#E53E3E' : '#38A169';
+  }, [fullAnalysisEnabled, visibilityLevel, isOccluded]);
 
-  const cushionMaterial = new THREE.MeshStandardMaterial({
+  const showThresholdGlow = fullAnalysisEnabled && isBelowThreshold;
+
+  const cushionMaterial = useMemo(() => new THREE.MeshStandardMaterial({
     color: cushionColor,
     roughness: 0.8,
     metalness: 0.05,
     emissive: isSelected
       ? new THREE.Color(cushionColor).multiplyScalar(0.3)
+      : showThresholdGlow
+      ? new THREE.Color('#FF0000').multiplyScalar(0.4)
       : new THREE.Color('#000000'),
-  });
+  }), [cushionColor, isSelected, showThresholdGlow]);
 
   const legW = 0.03;
   const deskTopY = DESK_HEIGHT;
@@ -138,6 +158,14 @@ export function Desk({ position, isSelected, isOccluded, onClick }: DeskProps) {
         <mesh position={[0, 0.02, CHAIR_DEPTH / 2 + DESK_DEPTH / 2 + 0.05]} rotation={[-Math.PI / 2, 0, 0]}>
           <ringGeometry args={[0.5, 0.55, 32]} />
           <meshBasicMaterial color="#FFFFFF" side={THREE.DoubleSide} transparent opacity={0.4} />
+        </mesh>
+      )}
+
+      {/* Below threshold warning ring */}
+      {showThresholdGlow && !isSelected && (
+        <mesh position={[0, 0.03, CHAIR_DEPTH / 2 + DESK_DEPTH / 2 + 0.05]} rotation={[-Math.PI / 2, 0, 0]}>
+          <ringGeometry args={[0.58, 0.65, 32]} />
+          <meshBasicMaterial color="#FF4444" side={THREE.DoubleSide} transparent opacity={0.7} />
         </mesh>
       )}
     </group>

@@ -46,6 +46,9 @@ function SceneContent() {
           position={seat.position}
           isSelected={selectedSeat === i}
           isOccluded={seat.isOccluded}
+          visibilityLevel={seat.visibilityLevel}
+          fullAnalysisEnabled={config.fullAnalysisEnabled}
+          isBelowThreshold={seat.visibilityPercent < config.complianceThreshold}
           onClick={() => handleSeatClick(i)}
         />
       ))}
