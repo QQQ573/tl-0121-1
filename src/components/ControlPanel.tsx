@@ -262,8 +262,8 @@ export function ControlPanel() {
                       style={{ fontFamily: '"JetBrains Mono", monospace' }}
                     >
                       {fullAnalysisStats.minVisibility}% · 第
-                      {fullAnalysisStats.minVisibilitySeat.row + 1}行第
-                      {fullAnalysisStats.minVisibilitySeat.col + 1}列
+                      {fullAnalysisStats.minVisibilitySeat.col + 1}行第
+                      {fullAnalysisStats.minVisibilitySeat.row + 1}列
                     </span>
                   </div>
                 )}

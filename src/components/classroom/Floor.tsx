@@ -59,7 +59,7 @@ export function HeadSpheres() {
     <group>
       {seatData.map((s, i) => {
         if (i === selectedSeat) return null;
-        if (s.position[2] <= seat.position[2]) return null;
+        if (s.position[2] >= seat.position[2]) return null;
         if (Math.abs(s.position[0] - seat.position[0]) > config.colSpacing * 2) return null;
 
         return (

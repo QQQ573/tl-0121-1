@@ -56,7 +56,7 @@ export function computeSightline(
       for (let j = 0; j < seats.length; j++) {
         if (j === seatIndex) continue;
         const other = seats[j];
-        if (other.position[2] <= seat.position[2]) continue;
+        if (other.position[2] >= seat.position[2]) continue;
         if (Math.abs(other.position[0] - seat.position[0]) > config.colSpacing * 2) continue;
 
         sphere.center.set(other.position[0], EYE_HEIGHT, other.position[2]);

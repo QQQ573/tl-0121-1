@@ -110,8 +110,12 @@ export const useClassroomStore = create<ClassroomState>((set, get) => {
       const newSeats = layoutChanged || fullToggled
         ? computeLayout(newConfig)
         : [...get().seatData];
-      const selectedSeat = get().selectedSeat;
+      let selectedSeat = get().selectedSeat;
       const fullEnabled = newConfig.fullAnalysisEnabled;
+
+      if (selectedSeat !== null && selectedSeat >= newSeats.length) {
+        selectedSeat = null;
+      }
 
       let result: SightlineResult | null = null;
       let stats: FullAnalysisStats | null = null;
@@ -146,6 +150,7 @@ export const useClassroomStore = create<ClassroomState>((set, get) => {
       set({
         config: newConfig,
         seatData: newSeats,
+        selectedSeat,
         sightlineResult: result,
         fullAnalysisStats: stats,
       });
